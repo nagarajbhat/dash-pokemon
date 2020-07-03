@@ -317,7 +317,7 @@ app.layout = dbc.Container([
         html.A(
             id = "gh-link",
             children = list("View on GitHub"),
-            href = "https://github.com/plotly/dash-sample-apps/tree/master/apps/dashr-volcanoplot",
+            href = "https://github.com/nagarajbhat/dash-pokemon",
             style = {'color' : "white", 'margin-top':20,'font-size':20,'border' : "solid 1px white",'float':"right"}
           ),       
         dbc.Tabs(
