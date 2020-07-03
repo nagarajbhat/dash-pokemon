@@ -36,6 +36,8 @@ app.title = 'Dash Pokemon'
 
 app_name = 'Dash Pokemon'
 
+server = app.server
+
 layout_style = {'background-color':'#FF9F1C','font-size':20}
 #test
 #app controls
