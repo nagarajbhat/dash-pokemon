@@ -38,7 +38,7 @@ app_name = 'Dash Pokemon'
 
 server = app.server
 
-layout_style = {'background-color':'#FF9F1C','font-size':20}
+layout_style = {'background-color':'#FF9F1C','font-size':15}
 #test
 #app controls
 controls = dbc.Form([
@@ -63,7 +63,7 @@ controls = dbc.Form([
                 value='HP'
                 )
                 ])
-])
+],style={'inline-block':True})
 
 controls2 = dbc.Form([
         dbc.FormGroup([
@@ -185,10 +185,11 @@ controls4 = dbc.Form([
 tab1_content = dbc.Card(
         dbc.CardBody([
         dbc.Row([
-                dbc.Col(controls, md=2)]),
-        dbc.Row([html.H3(id='p_text'),
-                        html.H3(id='b_type',style={'color':'white'})
-                        ])
+                dbc.Col(controls, md=2),
+                dbc.Col([html.H5(id='p_text'),
+                        html.H5(id='b_type',style={'color':'white'})
+                        ],md=6)
+        ])
                         ,
 
        dbc.Row([
@@ -202,9 +203,10 @@ tab2_content =  dbc.Card(
             dbc.CardBody([
                     
                  dbc.Row([
-                dbc.Col(controls2, md=2)]),
-                dbc.Col(html.H3(id='tab2_text')),
-                dbc.Col(dcc.Graph(id='strength_type',figure='fig'),md=10)
+                dbc.Col(controls2, md=2),
+                dbc.Col(html.H5(id='tab2_text'))
+                ]),
+                dbc.Col(dcc.Graph(id='strength_type',figure='fig'),md=8)
                  ]))
 
 tab3_content =  dbc.Card(
@@ -310,13 +312,13 @@ app.layout = dbc.Container([
        
                         
                         
-        html.H1(app_name,style={'display': 'inline-block'}),
-        html.Img(src=app.get_asset_url('bg-2.jpg'),height=70,style={'margin-left' :20,'margin-bottom':20,'display': 'inline-block'}),
+        html.H3(app_name,style={'display': 'inline-block'}),
+        html.Img(src=app.get_asset_url('bg-2.jpg'),height=50,style={'margin-left' :20,'margin-bottom':20,'display': 'inline-block'}),
         html.A(
             id = "gh-link",
             children = list("View on GitHub"),
             href = "https://github.com/plotly/dash-sample-apps/tree/master/apps/dashr-volcanoplot",
-            style = {'color' : "white", 'margin-top':20,'font-size':30,'border' : "solid 1px white",'float':"right"}
+            style = {'color' : "white", 'margin-top':20,'font-size':20,'border' : "solid 1px white",'float':"right"}
           ),       
         dbc.Tabs(
     [
@@ -340,7 +342,7 @@ app.layout = dbc.Container([
       
 def update_fig(dropdown_type,dropdown_criteria):
     filtered_df = df[df['Type 1']==dropdown_type]
-    fig = px.bar(filtered_df,y='Name',x=dropdown_criteria,color='Generation',template=graph_template,height=700  )
+    fig = px.bar(filtered_df,y='Name',x=dropdown_criteria,color='Generation',template=graph_template,height=500  )
     best_pokemon = filtered_df.loc[filtered_df[dropdown_criteria].idxmax()].Name
     text = f"Pokemon  of {dropdown_type} type with the best {dropdown_criteria} is : "
     #container = f"{dropdown_type} type selected"
@@ -357,7 +359,7 @@ def update_fig(dropdown_type,dropdown_criteria):
 def update_type_compare_fig(dropdown_type,dropdown_criteria):
     filtered_df = df[df['Type 1']==dropdown_type]
     
-    fig = px.bar(filtered_df,y='Name',x=dropdown_criteria,color='Legendary',template=graph_template,height=700)
+    fig = px.bar(filtered_df,y='Name',x=dropdown_criteria,color='Legendary',template=graph_template,height=500)
 
     fig.update_traces(textfont_size=30)
 
@@ -379,7 +381,7 @@ def strength_fig(strength,color_tab2):
 
     #fig.update_traces(textfont_size=30)
 
-    fig.update_layout(title="Boxplot for different types of pokemon",uniformtext_minsize=15, uniformtext_mode='hide',transition_duration=500,height=700)
+    fig.update_layout(title="Boxplot for different types of pokemon",uniformtext_minsize=15, uniformtext_mode='hide',transition_duration=500,height=500)
     #finding meadian values of all Type 1
     type_medians = {type:df[df['Type 1']==type][strength].median() for type  in df['Type 1'].unique()}
     key_max = max(type_medians.keys(), key=(lambda k: type_medians[k]))
@@ -395,7 +397,7 @@ def strength_fig(strength,color_tab2):
                Input('y_axis','value')])
 
 def attack_defense_leg_fig(x_axis,y_axis):
-    fig = px.scatter(df,x=x_axis,y=y_axis,color='Legendary',hover_name="Name",hover_data=["Attack","Defense","HP","Total"],template=graph_template,height=400)
+    fig = px.scatter(df,x=x_axis,y=y_axis,color='Legendary',hover_name="Name",hover_data=["Attack","Defense","HP","Total"],template=graph_template,height=300)
     fig.update_traces(textfont_size=30)
 
     fig.update_layout(title="scatterplot - legendary/non legendary pokemons",uniformtext_minsize=15, uniformtext_mode='hide',transition_duration=500)
@@ -409,7 +411,7 @@ def attack_defense_leg_fig(x_axis,y_axis):
 
 def attack_defense_type1_fig(x_axis,y_axis):
     
-    fig = px.scatter(df,x=x_axis,y=y_axis,color='Type 1',hover_name="Name",hover_data=["Attack","Defense","HP","Total"],template=graph_template,height=400)
+    fig = px.scatter(df,x=x_axis,y=y_axis,color='Type 1',hover_name="Name",hover_data=["Attack","Defense","HP","Total"],template=graph_template,height=300)
     fig.update_traces(textfont_size=30)
 
     fig.update_layout(title="scatterplot - different types of pokemon",uniformtext_minsize=15, uniformtext_mode='hide',transition_duration=500)
@@ -474,7 +476,7 @@ def prediction_update(pokemon_name,features_checklist,pokemon_type):
     #plotting pokemon stat figure
     data = df[df['Name']==pokemon_name].values
     cols = list(df[df['Name']==pokemon_name].columns)
-    fig = px.bar(data,x=cols[4:11],y=data[0][4:11],template=graph_template,height=500)
+    fig = px.bar(data,x=cols[4:11],y=data[0][4:11],template=graph_template,height=300)
     
     #fig = px.bar(df,x='Defense',y='Attack',width=500,height=500)
     fig.update_traces(textfont_size=30)
@@ -484,7 +486,7 @@ def prediction_update(pokemon_name,features_checklist,pokemon_type):
     vc = df_gd['Type 1'].value_counts()
     vc_types = list(vc.index)
     vc_counts = list(vc.values)
-    vc_type_fig = px.pie(vc, values=vc_counts, names=vc_types,template=graph_template,height=500)
+    vc_type_fig = px.pie(vc, values=vc_counts, names=vc_types,template=graph_template,height=300)
     vc_type_fig.update_traces(hole=0.4,textfont_size=30)
     vc_type_fig.update_layout(title='Selected Pokemon types share',uniformtext_minsize=15, uniformtext_mode='hide',transition_duration=50)
    
@@ -493,4 +495,4 @@ def prediction_update(pokemon_name,features_checklist,pokemon_type):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False)
