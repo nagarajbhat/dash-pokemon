@@ -7,6 +7,7 @@ import pandas as pd
 from dash.dependencies import Input,Output
 import plotly.express as px
 from mymodel import type_prediction
+import os
 
 #variables
 
@@ -491,4 +492,4 @@ def prediction_update(pokemon_name,features_checklist,pokemon_type):
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port) 
+    app.run_server(host='0.0.0.0', port=port) 
