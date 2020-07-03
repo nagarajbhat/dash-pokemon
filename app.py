@@ -491,5 +491,4 @@ def prediction_update(pokemon_name,features_checklist,pokemon_type):
 
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 21508))
-    app.run_server(host='0.0.0.0', port=port) 
+    app.run_server(debug=True)
