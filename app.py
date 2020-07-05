@@ -182,22 +182,29 @@ controls4 = dbc.Form([
                  
 
 #tabs                 
-tab1_content = dbc.Card(
-        dbc.CardBody([
+tab1_content = dbc.Card([
+        #dbc.CardBody([
+        
         dbc.Row([
                 dbc.Col(controls, md=2),
-                dbc.Col([html.H5(id='p_text'),
-                        html.H5(id='b_type',style={'color':'white'})
-                        ],md=6)
+                dbc.Col(dbc.Card([dbc.CardHeader(html.H6(id='p_text')),
+                        dbc.CardBody(html.H4(id='b_type',style={'color':'white'}))]
+                        ,color="info", inverse=True)
+                        
+                        ,md=3,style={'margin-top':20})
         ])
+                       
                         ,
-
+       dbc.Card(
        dbc.Row([
                 dbc.Col(dcc.Graph(id='generation',figure='fig'), md=6),
                 dbc.Col(dcc.Graph(id='legendary',figure='fig'),md=6)
               ])
+                        )
+                # ])
+                
                  ])
-                 )
+                        
                 
 tab2_content =  dbc.Card(
             dbc.CardBody([
