@@ -27,7 +27,7 @@ type1 = pd.Series(df['Type 1']).unique()
 graph_template="plotly_dark"
 
 #app
-#good themes - SLATE,BOOTSTRAP, DARKLY
+#good themes - SLATE,BOOTSTRAP, DARKLY, CYBORG
 app = dash.Dash('DashPokemon',meta_tags=[
         {"name": "viewport", "content": "width=device-width, initial-scale=1"}
         ],
@@ -38,7 +38,8 @@ app_name = 'Dash Pokemon'
 
 server = app.server
 
-layout_style = {'background-color':'#FF9F1C','font-size':15}
+#layout_style = {'background-color':'#FF9F1C','font-size':15}
+layout_style = {    }
 #test
 #app controls
 controls = dbc.Form([
@@ -65,7 +66,7 @@ controls = dbc.Form([
                 ])
 ],style={'inline-block':True})
 
-controls2 = dbc.Form([
+controls2_a = dbc.Form([
         dbc.FormGroup([
                 dbc.Label("strentgth criteria"),
                 dcc.Dropdown(
@@ -77,7 +78,20 @@ controls2 = dbc.Form([
 
                             
         ]),
-        dbc.FormGroup([
+        
+         dbc.FormGroup([
+                dbc.Label("Stat type"),
+                 dcc.RadioItems(
+                id='stat_type',
+                options = [{'label':i,'value':i} for i in ['median', 'max']],
+                value='median',
+                inputStyle={"margin-left": "20px"}
+
+                )
+                ])
+                 ])
+                 
+controls2_b =  dbc.FormGroup([
                 dbc.Label("Color"),
                  dcc.RadioItems(
                 id='color_tab2',
@@ -87,7 +101,7 @@ controls2 = dbc.Form([
 
                 )
                 ])
-        ])
+                                  
                 
 controls3_a = dbc.Form([
         dbc.FormGroup([
@@ -189,12 +203,12 @@ tab1_content = dbc.Card([
                         ,color="info", inverse=True)
                         
                         ,md=3,style={'margin-top':20})
-        ])
-                       
-                        ,
+        ]),
+        html.Br(),
        dbc.Card(
        dbc.Row([
                 dbc.Col(dcc.Graph(id='generation',figure='fig'), md=6),
+                html.Br(),
                 dbc.Col(dcc.Graph(id='legendary',figure='fig'),md=6)
               ])
                         )
@@ -207,25 +221,26 @@ tab2_content =  dbc.Card(
             dbc.CardBody([
                     
                  dbc.Row([
-                dbc.Col(controls2, md=2),
-                dbc.Col(html.H5(id='tab2_criteria'),md=2),
+                dbc.Col(controls2_a, md=2),
+                dbc.Col([controls2_b,html.Br(), html.H5(id='tab2_criteria'),],md=2),
                 dbc.Col(dbc.Card([dbc.CardHeader(html.H6("The Weakest type is:")),
                         dbc.CardBody(html.H4(id='weakest_type',style={'color':'white'}))]
-                        ,color="info", inverse=True)),
+                        ,color="danger", inverse=True)),
                 dbc.Col(dbc.Card([dbc.CardHeader(html.H6("The Strongest type is:")),
                         dbc.CardBody(html.H4(id='strongest_type',style={'color':'white'}))]
-                        ,color="info", inverse=True)),
+                        ,color="success", inverse=True)),
                 ]),
+                html.Br(),
                 dbc.Col(dcc.Graph(id='strength_type',figure='fig'),md=12)
                  ]))
 
 tab3_content =  dbc.Card(
             dbc.CardBody([
                 dbc.Row([dbc.Col(controls3_a,md=2),
-                         dbc.Col(dbc.Card([dbc.CardHeader(html.H6(id='corr_text')),
+                         dbc.Col([dbc.Card([dbc.CardHeader(html.H6(id='corr_text')),
                         dbc.CardBody(html.H4(id='correlation',style={'color':'white'}))]
-                        ,color="info", inverse=True),md=2),
-                          dbc.Col(dcc.Graph(id='attack_defense_legendary',figure='fig'),md=3),
+                        ,color="info", inverse=True),html.Br()],md=2),
+                          dbc.Col([dcc.Graph(id='attack_defense_legendary',figure='fig'),html.Br()],md=3),
                         dbc.Col(dcc.Graph(id='attack_defense_type1',figure='fig'),md=3)]),
                         
                 html.Br(),
@@ -284,8 +299,9 @@ tab4_content =  dbc.Card(
                          html.Br(),
                         dbc.Card([dbc.CardHeader(html.H6("Model Accuracy:")),
                         dbc.CardBody(html.H4(id='model_acc',style={'color':'white'}))]
-                        ,color="info", inverse=True)],md=3),
-                dbc.Col(dcc.Graph(id='pokemon_stat',figure='fig'),md=3),
+                        ,color="info", inverse=True),html.Br()],md=3),
+                        
+                dbc.Col([dcc.Graph(id='pokemon_stat',figure='fig'),html.Br()],md=3),
                 dbc.Col(dcc.Graph(id='vc_type',figure='fig'),md=3   ),
                 
 
@@ -328,14 +344,20 @@ app.layout = dbc.Container([
                         
                         
         html.H3(app_name,style={'display': 'inline-block'}),
-        html.Img(src=app.get_asset_url('bg-2.jpg'),height=50,style={'margin-left' :20,'margin-bottom':20,'display': 'inline-block'}),
-        html.A(
-            id = "gh-link",
-            children = list("View on GitHub"),
-            href = "https://github.com/nagarajbhat/dash-pokemon",
-            style = {'color' : "white", 'margin-top':20,'font-size':20,'border' : "solid 1px white",'float':"right"}
-          ),       
-        dbc.Tabs(
+        html.Img(src=app.get_asset_url('bg-2.jpg'),height=50,style={'margin-left' :20,'margin-bottom':20,'display': 'inline-block',  'border-radius': 50}),
+        #html.A(
+         #   id = "gh-link",
+          #  children = list("View on GitHub"),
+           # href = "https://github.com/nagarajbhat/dash-pokemon",
+           # style = {'color' : "white", 'margin-top':20,'font-size':15,'border' : "solid 1px white",'float':"right"}
+          #),  
+        
+        dbc.Badge("github", href="https://github.com/nagarajbhat/dash-pokemon", color="secondary",
+                              style = {'color' : "white", 'margin-top':20,'margin-right':10,'font-size':15,'border' : "solid 1px white",'float':"right"}  ),
+        dbc.Badge("twitter", href="https://twitter.com/nagarajbhat92", color="secondary",
+                              style = {'color' : "white", 'margin-top':20,'margin-right':10,'font-size':15,'border' : "solid 1px white",'float':"right"}  ),
+        
+                  dbc.Tabs(
     [
         dbc.Tab(tab1_content, label="Best Pokemons"),
         dbc.Tab(tab2_content, label="Strongest and Weakest Types"),
@@ -389,9 +411,10 @@ def update_type_compare_fig(dropdown_type,dropdown_criteria):
                Output('strongest_type','children'),
                ],
               [Input('strength','value'),
-               Input('color_tab2','value')])
+               Input('color_tab2','value'),
+               Input('stat_type','value')])
 
-def strength_fig(strength,color_tab2):
+def strength_fig(strength,color_tab2,stat_type):
     #filtered_df = df[df['Name']==pokemon_name]
     
     #df = px.data.iris()
@@ -401,12 +424,16 @@ def strength_fig(strength,color_tab2):
 
     fig.update_layout(title="Boxplot for different types of pokemon",uniformtext_minsize=15, uniformtext_mode='hide',transition_duration=500,height=500)
     #finding meadian values of all Type 1
-    type_medians = {type:df[df['Type 1']==type][strength].median() for type  in df['Type 1'].unique()}
+    if(stat_type == 'median'):
+        type_medians = {type:df[df['Type 1']==type][strength].median() for type  in df['Type 1'].unique()}
+    elif(stat_type == 'max'):
+        type_medians = {type:df[df['Type 1']==type][strength].max() for type  in df['Type 1'].unique()}
+
     key_max = max(type_medians.keys(), key=(lambda k: type_medians[k]))
     key_min = min(type_medians.keys(), key=(lambda k: type_medians[k]))
     
     
-    tab2_criteria = f"Based on the median {strength} values:"
+    tab2_criteria = f"Based on the {stat_type} {strength} value:"
     
     return fig, tab2_criteria, key_min,key_max
 
