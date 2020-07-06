@@ -31,7 +31,7 @@ graph_template="plotly_dark"
 app = dash.Dash('DashPokemon',meta_tags=[
         {"name": "viewport", "content": "width=device-width, initial-scale=1"}
         ],
-        external_stylesheets=[dbc.themes.CYBORG])
+        external_stylesheets=[dbc.themes.SLATE])
 app.title = 'Dash Pokemon'
 
 app_name = 'Dash Pokemon'
@@ -39,7 +39,7 @@ app_name = 'Dash Pokemon'
 server = app.server
 
 #layout_style = {'background-color':'#FF9F1C','font-size':15}
-layout_style = {    }
+layout_style = {}
 #test
 #app controls
 controls = dbc.Form([
