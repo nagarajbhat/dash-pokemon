@@ -148,9 +148,7 @@ controls4 = dbc.Form([
                                
 
                                 )  ,
-                       dcc.Markdown("""
-                                    * The Model accuracy will go down as you select more Pokemon types.
-                                    * Pokemon name list will get updated based on the types selected here."""),
+                      
 
                         ]),
                 html.Hr(),
@@ -174,8 +172,7 @@ controls4 = dbc.Form([
                                 inputStyle={"margin-left": "20px"}
 
                                 )  ,
-                        dcc.Markdown("""
-                                     * The more features that you select,the better the model is likely to perform."""),
+                      
 
                         ])
                         ])
@@ -183,7 +180,7 @@ controls4 = dbc.Form([
 
 #tabs                 
 tab1_content = dbc.Card([
-        #dbc.CardBody([
+        dbc.CardBody([
         
         dbc.Row([
                 dbc.Col(controls, md=2),
@@ -201,7 +198,7 @@ tab1_content = dbc.Card([
                 dbc.Col(dcc.Graph(id='legendary',figure='fig'),md=6)
               ])
                         )
-                # ])
+                 ])
                 
                  ])
                         
@@ -211,22 +208,33 @@ tab2_content =  dbc.Card(
                     
                  dbc.Row([
                 dbc.Col(controls2, md=2),
-                dbc.Col(html.H5(id='tab2_text'))
+                dbc.Col(html.H5(id='tab2_criteria'),md=2),
+                dbc.Col(dbc.Card([dbc.CardHeader(html.H6("The Weakest type is:")),
+                        dbc.CardBody(html.H4(id='weakest_type',style={'color':'white'}))]
+                        ,color="info", inverse=True)),
+                dbc.Col(dbc.Card([dbc.CardHeader(html.H6("The Strongest type is:")),
+                        dbc.CardBody(html.H4(id='strongest_type',style={'color':'white'}))]
+                        ,color="info", inverse=True)),
                 ]),
-                dbc.Col(dcc.Graph(id='strength_type',figure='fig'),md=8)
+                dbc.Col(dcc.Graph(id='strength_type',figure='fig'),md=12)
                  ]))
 
 tab3_content =  dbc.Card(
             dbc.CardBody([
                 dbc.Row([dbc.Col(controls3_a,md=2),
+                         dbc.Col(dbc.Card([dbc.CardHeader(html.H6(id='corr_text')),
+                        dbc.CardBody(html.H4(id='correlation',style={'color':'white'}))]
+                        ,color="info", inverse=True),md=2),
                           dbc.Col(dcc.Graph(id='attack_defense_legendary',figure='fig'),md=3),
                         dbc.Col(dcc.Graph(id='attack_defense_type1',figure='fig'),md=3)]),
+                        
                 html.Br(),
                 dbc.Row([
                        
                         dbc.Col(controls3_b,md=2),
                         dbc.Col(dcc.Graph(id='heatmap',figure='fig'),md=4),
-
+                        #dbc.Col(html.H2(id='all_corr'),md=4),
+                        
 
                         ])
                         ])
@@ -268,26 +276,23 @@ tab3_content =  dbc.Card(
 tab4_content =  dbc.Card(
             dbc.CardBody([
                  dbc.Row([
-                dbc.Col(controls4, md=4),
-                dbc.Col(dcc.Graph(id='pokemon_stat',figure='fig'),md=4),
-                dbc.Col(dcc.Graph(id='vc_type',figure='fig'),md=4 )
-
-                ]),
-                html.Hr(),
-
-                dbc.Row([
-                html.H3("The type predicted for  "),
-                html.H3(id="p_name"),
-                html.H3("""   :  """),
-                html.H3(id='predict_text',style={'color':'white'})
+                dbc.Col(controls4, md=3),
+                html.Br(),
+                dbc.Col([dbc.Card([dbc.CardHeader([html.H6("The type predicted for"),html.H5(id='p_name')]),
+                        dbc.CardBody(html.H4(id='predict_text',style={'color':'white'}))]
+                        ,color="info", inverse=True),
+                         html.Br(),
+                        dbc.Card([dbc.CardHeader(html.H6("Model Accuracy:")),
+                        dbc.CardBody(html.H4(id='model_acc',style={'color':'white'}))]
+                        ,color="info", inverse=True)],md=3),
+                dbc.Col(dcc.Graph(id='pokemon_stat',figure='fig'),md=3),
+                dbc.Col(dcc.Graph(id='vc_type',figure='fig'),md=3   ),
                 
+
                 ]),
-                 dbc.Row([
-                html.H3("Model accuracy: "),
-                html.H3(id="model_acc", style={'color':'white'}),
-                html.H3("%",style={'color':'white'})
-                ]),     
                 html.Hr(),
+               
+                
                 dbc.Row([
                 html.H4("""Selected pokemon types:"""),
                 html.H4(id="ptype_list",style={'color':'white'}),
@@ -307,6 +312,9 @@ tab4_content =  dbc.Card(
                              * The class in this dataset in imbalanced.
                              * Hence Generally it performs better on binary classification when compared to multi-classification.
                              * Therefore select only 2 types to ge the best results.
+                             * The Model accuracy will go down as you select more Pokemon types.
+                             * Pokemon name list will get updated based on the types selected.
+                             * The more features that you select,the better the model is likely to perform.
                                 """),
                              ])
                
@@ -376,7 +384,10 @@ def update_type_compare_fig(dropdown_type,dropdown_criteria):
 
 
 @app.callback([Output('strength_type','figure'),
-               Output('tab2_text','children')],
+               Output('tab2_criteria','children'),
+               Output('weakest_type','children'),
+               Output('strongest_type','children'),
+               ],
               [Input('strength','value'),
                Input('color_tab2','value')])
 
@@ -394,12 +405,16 @@ def strength_fig(strength,color_tab2):
     key_max = max(type_medians.keys(), key=(lambda k: type_medians[k]))
     key_min = min(type_medians.keys(), key=(lambda k: type_medians[k]))
     
-    text = f"Based on the median {strength} values, The weakest type is {key_min}, and the strongest type is {key_max}"
-    return fig,text
+    
+    tab2_criteria = f"Based on the median {strength} values:"
+    
+    return fig, tab2_criteria, key_min,key_max
 
 
 
-@app.callback(Output('attack_defense_legendary','figure'),
+@app.callback([Output('attack_defense_legendary','figure'),
+              Output('corr_text','children'),
+             Output('correlation','children')]  ,
               [Input('x_axis','value'),
                Input('y_axis','value')])
 
@@ -408,8 +423,9 @@ def attack_defense_leg_fig(x_axis,y_axis):
     fig.update_traces(textfont_size=30)
 
     fig.update_layout(title="scatterplot - legendary/non legendary pokemons",uniformtext_minsize=15, uniformtext_mode='hide',transition_duration=500)
-
-    return fig
+    corr_text = f"Correlation between {x_axis} and {y_axis} is:"
+    correlation = round(df[x_axis].corr(df[y_axis]),2)
+    return fig,corr_text,correlation
 
 
 @app.callback(Output('attack_defense_type1','figure'),
@@ -437,11 +453,10 @@ def heatmap_fig(color):
     color= color, hover_name="Name",template=graph_template,height=500)
 
     #fig.update_traces(textfont_size=30)
-
     fig.update_layout(title="A pairplot showing relationship between different features of pokemon",uniformtext_minsize=15, uniformtext_mode='hide',transition_duration=500)
+    #all_corr = df.corr()
 
     return fig
-
 
 @app.callback(Output('pokemon_name','options'),
               [Input('pokemon_type','value')])
