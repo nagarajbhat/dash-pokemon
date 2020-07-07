@@ -7,23 +7,33 @@ import pandas as pd
 from dash.dependencies import Input,Output
 import plotly.express as px
 from mymodel import type_prediction
-import os
+
 
 #variables
 
+#load data
 df = pd.read_csv('./data/pokemon.csv')
 
 #print(df.columns)
 
+
+#Generation is of type 'int64' , for 'Attack vs defense we need scatterplot, where color=generation,
+# and it needs to of type object, so we will make use of convert it and store it in df_ds (ds means discrete)
+df_ds = df.copy()
+df_ds['Generation'] = df_ds['Generation'].astype(object)
+
+
 #data creation
-df_grass = df[df['Type 1']=='Grass']
-df_legendary = df[df['Legendary']==True]
+#df_legendary = df[df['Legendary']==True] #not used
+
+#type1 is used in controls - tab1
 type1 = pd.Series(df['Type 1']).unique()
 
-#ghost and groud  pokemons
-#df_gd = df.loc[(df['Type 1']=='Ground')| (df['Type 1']=='Ghost')]
-#pokemon_names = pd.Series(df_gd['Name']).unique()
+#ghost and groud  pokemons #not used
+#df_gd = df.loc[(df['Type 1']=='Ground')| (df['Type 1']=='Ghost')] #not used
+#pokemon_names = pd.Series(df_gd['Name']).unique() #not used
 
+#templates used in graphs
 graph_template="plotly_dark"
 
 #app
@@ -40,15 +50,17 @@ server = app.server
 
 #layout_style = {'background-color':'#FF9F1C','font-size':15}
 layout_style = {'background-color':'#D75C37'}
-#test
+
+    
+#--------------------------------------------------------------------------------------------
 #app controls
 controls = dbc.Form([
         dbc.FormGroup([
                 dbc.Label("Pokemon Type"),
                 dcc.Dropdown(
                 id='dropdown_type',
-                options = [{'label':i,'value':i} for i in type1],
-                value='Grass', 
+                    options = [{'label':i,'value':i} for i in type1],
+                value='Fire', 
 
                 ),
 
@@ -61,7 +73,7 @@ controls = dbc.Form([
                 id='dropdown_criteria',
                 options = [{'label':i,'value':i} for i in ['Total', 'HP', 'Attack', 'Defense',
        'Sp. Atk', 'Sp. Def', 'Speed']],
-                value='HP'
+                value='Total'
                 )
                 ])
 ],style={'inline-block':True})
@@ -139,7 +151,7 @@ controls3_b = dbc.FormGroup([
                 
 controls4 = dbc.Form([
                  dbc.FormGroup([
-                        html.H4("Select a pokemon to predict its type"),
+                        html.H5("Select a pokemon to predict its type"),
                         dbc.Label("pokemon name"),
                         dcc.Dropdown(
                                 id='pokemon_name',
@@ -235,19 +247,28 @@ tab2_content =  dbc.Card(
 
 tab3_content =  dbc.Card(
             dbc.CardBody([
-                dbc.Row([dbc.Col(controls3_a,md=2),
-                         dbc.Col([dbc.Card([dbc.CardHeader(html.H6(id='corr_text')),
+                dbc.Row([dbc.Col([controls3_a,dbc.Card([dbc.CardHeader(html.H6(id='corr_text')),
                         dbc.CardBody(html.H4(id='correlation',style={'color':'white'}))]
                         ,color="info", inverse=True),html.Br()],md=2),
-                          dbc.Col([dcc.Graph(id='attack_defense_legendary',figure='fig'),html.Br()],md=3),
-                        dbc.Col(dcc.Graph(id='attack_defense_type1',figure='fig'),md=3)]),
                         
+                        dbc.Col([dcc.Graph(id='scatter_legendary',figure='fig'),html.Br(),
+                                 dcc.Graph(id='density_legendary',figure='fig'),html.Br()],md=3),
+                        dbc.Col([dcc.Graph(id='scatter_type',figure='fig'),html.Br(),
+                                 dcc.Graph(id='density_type',figure='fig'),html.Br()],md=3),
+                        dbc.Col([dcc.Graph(id='scatter_generation',figure='fig'),html.Br(),
+                                 dcc.Graph(id='density_generation',figure='fig')],md=3),
+                        ]),
+                     
+                html.Br(),
+                
+                
                 html.Br(),
                 dbc.Row([
                        
                         dbc.Col(controls3_b,md=2),
-                        dbc.Col(dcc.Graph(id='heatmap',figure='fig'),md=4),
+                        dbc.Col(dcc.Graph(id='heatmap',figure='fig'),md=8),
                         #dbc.Col(html.H2(id='all_corr'),md=4),
+                       
                         
 
                         ])
@@ -292,7 +313,7 @@ tab4_content =  dbc.Card(
                  dbc.Row([
                 dbc.Col(controls4, md=3),
                 html.Br(),
-                dbc.Col([dbc.Card([dbc.CardHeader([html.H6("The type predicted for"),html.H5(id='p_name')]),
+                dbc.Col([dbc.Card([dbc.CardHeader([html.H6("The type predicted for"),html.H6(id='p_name')]),
                         dbc.CardBody(html.H4(id='predict_text',style={'color':'white'}))]
                         ,color="info", inverse=True),
                          html.Br(),
@@ -341,21 +362,27 @@ tab4_content =  dbc.Card(
 app.layout = dbc.Container([
        
                         
-                        
-        html.H3(app_name,style={'display': 'inline-block'}),
+                                          dbc.Row([
+                                                  
+        html.H3(app_name,style={'display': 'inline-block','color':'white'}),
         html.Img(src=app.get_asset_url('bg-2.jpg'),height=50,style={'margin-left' :20,'margin-bottom':20,'display': 'inline-block',  'border-radius': 50}),
+      
+                
         #html.A(
          #   id = "gh-link",
           #  children = list("View on GitHub"),
            # href = "https://github.com/nagarajbhat/dash-pokemon",
            # style = {'color' : "white", 'margin-top':20,'font-size':15,'border' : "solid 1px white",'float':"right"}
           #),  
-        
+          dbc.Col([
         dbc.Badge("github", href="https://github.com/nagarajbhat/dash-pokemon", color="secondary",
-                              style = {'color' : "white", 'margin-top':20,'margin-right':10,'font-size':15,'border' : "solid 1px white",'float':"right"}  ),
+                              style = {'color' : "white", 'margin-top':5,'margin-right':10,'font-size':15,'border' : "solid 1px white",'float':"right"}  ),
         dbc.Badge("twitter", href="https://twitter.com/nagarajbhat92", color="secondary",
-                              style = {'color' : "white", 'margin-top':20,'margin-right':10,'font-size':15,'border' : "solid 1px white",'float':"right"}  ),
+                              style = {'color' : "white", 'margin-top':5,'margin-right':10,'font-size':15,'border' : "solid 1px white",'float':"right"}  ),
         
+        ])
+        ]),
+              
                   dbc.Tabs(
     [
         dbc.Tab(tab1_content, label="Best Pokemons"),
@@ -364,6 +391,9 @@ app.layout = dbc.Container([
         dbc.Tab(tab4_content, label="Pokemon Type Prediction")
              
                 ])
+                    
+                
+                
                 ],
                 fluid=True,style=layout_style
                 )
@@ -421,7 +451,7 @@ def strength_fig(strength,color_tab2,stat_type):
 
     #fig.update_traces(textfont_size=30)
 
-    fig.update_layout(title="Boxplot for different types of pokemon",uniformtext_minsize=15, uniformtext_mode='hide',transition_duration=500,height=500)
+    fig.update_layout(title="Boxplot for different types of pokemon",uniformtext_minsize=15, uniformtext_mode='hide',transition_duration=500,height=600)
     #finding meadian values of all Type 1
     if(stat_type == 'median'):
         type_medians = {type:df[df['Type 1']==type][strength].median() for type  in df['Type 1'].unique()}
@@ -438,35 +468,73 @@ def strength_fig(strength,color_tab2,stat_type):
 
 
 
-@app.callback([Output('attack_defense_legendary','figure'),
-              Output('corr_text','children'),
+@app.callback([Output('corr_text','children'),
              Output('correlation','children')]  ,
               [Input('x_axis','value'),
                Input('y_axis','value')])
 
-def attack_defense_leg_fig(x_axis,y_axis):
-    fig = px.scatter(df,x=x_axis,y=y_axis,color='Legendary',hover_name="Name",hover_data=["Attack","Defense","HP","Total"],template=graph_template,height=300)
-    fig.update_traces(textfont_size=30)
-
-    fig.update_layout(title="scatterplot - legendary/non legendary pokemons",uniformtext_minsize=15, uniformtext_mode='hide',transition_duration=500)
+def correlation_value(x_axis,y_axis):
+    
     corr_text = f"Correlation between {x_axis} and {y_axis} is:"
     correlation = round(df[x_axis].corr(df[y_axis]),2)
-    return fig,corr_text,correlation
+    return corr_text,correlation
 
 
-@app.callback(Output('attack_defense_type1','figure'),
+@app.callback([Output('scatter_legendary','figure'),
+               Output('scatter_type','figure'),
+               Output('scatter_generation','figure')               
+               ] ,
               [Input('x_axis','value'),
                Input('y_axis','value')])
 
-def attack_defense_type1_fig(x_axis,y_axis):
+def correlation_scatterplots(x_axis,y_axis):
     
-    fig = px.scatter(df,x=x_axis,y=y_axis,color='Type 1',hover_name="Name",hover_data=["Attack","Defense","HP","Total"],template=graph_template,height=300)
-    fig.update_traces(textfont_size=30)
+    #scatterplots
+    scatter_legendary = px.scatter(df_ds,x=x_axis,y=y_axis,color='Legendary',hover_name="Name",hover_data=["Attack","Defense","HP","Total"],template=graph_template,height=300,
+                     title="Correlation, by legendary")
+    
+    scatter_type = px.scatter(df_ds,x=x_axis,y=y_axis,color='Type 1',hover_name="Name",hover_data=["Attack","Defense","HP","Total"],template=graph_template,height=300,
+                     title="Correlation,by types")
+    scatter_generation = px.scatter(df_ds,x=x_axis,y=y_axis,color='Generation',hover_name="Name",hover_data=["Attack","Defense","HP","Total"],template=graph_template,height=300,
+                     title="Correlation,by Genrations")
 
-    fig.update_layout(title="scatterplot - different types of pokemon",uniformtext_minsize=15, uniformtext_mode='hide',transition_duration=500)
+    # fig.update_traces(textfont_size=30)
 
-    return fig
- 
+    # fig.update_layout(title="Correlation,by different types",uniformtext_minsize=15, uniformtext_mode='hide',transition_duration=500)
+    
+   
+    
+    return scatter_legendary,scatter_type,scatter_generation
+
+
+@app.callback([Output('density_legendary','figure'),
+               Output('density_type','figure'),
+               Output('density_generation','figure')
+               ] ,
+              [Input('x_axis','value'),
+               Input('y_axis','value')])
+
+def correlation_densityplots(x_axis,y_axis):
+    
+   
+    #density plots
+    density_legendary =  px.density_contour(df_ds, x=x_axis, y=y_axis, color="Legendary", marginal_x="rug", marginal_y="histogram",template=graph_template,height=300,
+                                            title="Density contour, by legendary")
+
+    density_type =  px.density_contour(df_ds, x=x_axis, y=y_axis, color="Type 1", marginal_x="rug", marginal_y="histogram",hover_name="Name",template=graph_template,height=300,
+                                      title="Density contour, by Types")
+
+
+    density_generation = px.density_contour(df_ds, x=x_axis, y=y_axis, color="Generation", marginal_x="rug", marginal_y="histogram",hover_name="Name",template=graph_template,height=300,
+                                 title="Density contour, by Genrations")
+    
+    
+    
+    
+    #return scatter_legendary,scatter_type,scatter_generation,density_legendary,density_type,density_generation,fig
+    return density_legendary,density_type,density_generation
+
+
 @app.callback(Output('heatmap','figure'),
               [Input('color','value')])
 
@@ -476,7 +544,7 @@ def heatmap_fig(color):
     #df = px.data.iris()
     fig = px.scatter_matrix(df,
     dimensions=["Total","HP","Attack","Defense","Sp. Atk","Sp. Def","Speed"],
-    color= color, hover_name="Name",template=graph_template,height=500)
+    color= color, hover_name="Name",template=graph_template,height=600)
 
     #fig.update_traces(textfont_size=30)
     fig.update_layout(title="A pairplot showing relationship between different features of pokemon",uniformtext_minsize=15, uniformtext_mode='hide',transition_duration=500)
