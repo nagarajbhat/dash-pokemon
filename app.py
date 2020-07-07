@@ -39,7 +39,7 @@ app_name = 'Dash Pokemon'
 server = app.server
 
 #layout_style = {'background-color':'#FF9F1C','font-size':15}
-layout_style = {}
+layout_style = {'background-color':'#D75C37'}
 #test
 #app controls
 controls = dbc.Form([
@@ -207,8 +207,7 @@ tab1_content = dbc.Card([
         html.Br(),
        dbc.Card(
        dbc.Row([
-                dbc.Col(dcc.Graph(id='generation',figure='fig'), md=6),
-                html.Br(),
+                dbc.Col([dcc.Graph(id='generation',figure='fig'),html.Br()], md=6),
                 dbc.Col(dcc.Graph(id='legendary',figure='fig'),md=6)
               ])
                         )
