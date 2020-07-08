@@ -1,5 +1,6 @@
 # dash-pokemon
 A plotly Dash App for pokemon - Visual analysis and pokemon type prediction.
+
 The app is currently deployed here on heroku - [dash-pokemon](https://dash-pokemon.herokuapp.com/)
 
 ## Screenshots - 
