@@ -5,6 +5,9 @@ The app is currently deployed here on heroku - [dash-pokemon](https://dash-pokem
 
 ## Screenshots - 
 
+### Demo gif
+![demo gif](https://github.com/nagarajbhat/dash-pokemon/blob/master/screenshots/demo_gif.gif)
+
 ### tab1 - Best pokemon
 ![tab 1](https://github.com/nagarajbhat/dash-pokemon/blob/master/screenshots/tab1.PNG)
 
