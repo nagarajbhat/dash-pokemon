@@ -32,8 +32,7 @@ python -m virtualenv venv
 cd venv/Scripts
 activate
 ```
-3. install requirements
-Come back to same folder with requirements.txt to install dependencies
+3. Come back to same folder with requirements.txt to install dependencies
 
 ```
 pip install -r requirements.txt
