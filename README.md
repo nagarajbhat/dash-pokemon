@@ -26,7 +26,7 @@ The app is currently deployed here on heroku - [dash-pokemon](https://dash-pokem
 ```
 git clone https://github.com/nagarajbhat/dash-pokemon.git
 ```
-2. Create and activate virtual environemnt(windows)
+2. Create and activate virtual environment(windows)
 ```
 python -m virtualenv venv
 cd venv/Scripts
