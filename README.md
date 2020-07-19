@@ -19,3 +19,31 @@ The app is currently deployed here on heroku - [dash-pokemon](https://dash-pokem
 
 ### Tab 4 - pokemon prediction
 ![tab 4](https://github.com/nagarajbhat/dash-pokemon/blob/master/screenshots/tab4.PNG)
+
+## Instructions to run locally
+
+1. Clone this repo
+```
+git clone https://github.com/nagarajbhat/dash-pokemon.git
+```
+2. Create and activate virtual environemnt(windows)
+```
+python -m virtualenv venv
+cd venv/Scripts
+activate
+```
+3. install requirements
+Come back to same folder with requirements.txt to install dependencies
+
+```
+pip install -r requirements.txt
+```
+
+4. execute the app
+```
+python app.py
+```
+
+5. open in browser:
+
+The app will be served at https://localhost:8050
